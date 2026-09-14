@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GFR Calculator — Estimate Kidney Function (CKD-EPI 2021)</title>
+<meta name="description" content="Free GFR calculator using the 2021 CKD-EPI creatinine equation. Enter age, sex, and serum creatinine to estimate eGFR and see your CKD stage. Runs entirely in your browser, no data stored.">
+<meta name="keywords" content="gfr calculator, egfr calculator, glomerular filtration rate, ckd-epi 2021, kidney function calculator, creatinine clearance">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#2563eb">
+
+<link rel="canonical" href="https://yourdomain.com/es/">
+<link rel="alternate" hreflang="en" href="https://yourdomain.com/">
+<link rel="alternate" hreflang="zh-Hans" href="https://yourdomain.com/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://yourdomain.com/zh-tw/">
+<link rel="alternate" hreflang="ja" href="https://yourdomain.com/ja/">
+<link rel="alternate" hreflang="ko" href="https://yourdomain.com/ko/">
+<link rel="alternate" hreflang="de" href="https://yourdomain.com/de/">
+<link rel="alternate" hreflang="ru" href="https://yourdomain.com/ru/">
+<link rel="alternate" hreflang="es" href="https://yourdomain.com/es/">
+<link rel="alternate" hreflang="x-default" href="https://yourdomain.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="GFR Calculator — Estimate Kidney Function (CKD-EPI 2021)">
+<meta property="og:description" content="Free GFR calculator using the 2021 CKD-EPI creatinine equation. Runs entirely in your browser.">
+<meta property="og:url" content="https://yourdomain.com/es/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "GFR Calculator",
+  "url": "https://yourdomain.com/es/",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Any",
+  "description": "Free GFR calculator using the 2021 CKD-EPI creatinine equation to estimate kidney function and CKD stage.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<script>window.__FORCE_LANG__ = 'es';</script>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="lang-switch">
+    <select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
+      <option value="en">English</option>
+      <option value="zh">简体中文</option>
+      <option value="zh-TW">繁體中文</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="de">Deutsch</option>
+      <option value="ru">Русский</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+  <div class="hero-inner">
+    <h1 data-i18n="title">Glomerular Filtration Rate (GFR) Calculator</h1>
+    <p data-i18n="subtitle">Estimate kidney function using the 2021 CKD-EPI creatinine equation. All calculations run in your browser — no data is sent or stored.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card">
+    <h2 class="visually-hidden" data-i18n="calcHeading">GFR Calculator</h2>
+    <div class="row">
+      <div>
+        <label for="age" data-i18n="ageLabel">Age (years)</label>
+        <input type="number" id="age" min="18" max="120" placeholder="58" inputmode="numeric">
+      </div>
+      <div>
+        <label for="sex" data-i18n="sexLabel">Sex</label>
+        <select id="sex">
+          <option value="" data-i18n="sexSelect">Select</option>
+          <option value="female" data-i18n="female">Female</option>
+          <option value="male" data-i18n="male">Male</option>
+        </select>
+      </div>
+    </div>
+    <label for="creat" data-i18n="creatLabel">Serum creatinine</label>
+    <div class="row">
+      <div style="flex:2">
+        <input type="number" id="creat" step="0.01" min="0.1" placeholder="0.9" inputmode="decimal">
+      </div>
+      <div style="flex:1">
+        <select id="unit" aria-label="Creatinine unit">
+          <option value="mgdl">mg/dL</option>
+          <option value="umol">µmol/L</option>
+        </select>
+      </div>
+    </div>
+    <button class="calc" type="button" onclick="calculate()" data-i18n="calcBtn">Calculate eGFR</button>
+
+    <div id="result" role="region" aria-live="polite">
+      <div class="result-top">
+        <div class="result-left">
+          <div class="result-label" data-i18n="resultLabel">Estimated GFR</div>
+          <div class="egfr-num">
+            <span id="egfrValue">—</span>
+            <span class="egfr-unit">mL/min/1.73m²</span>
+          </div>
+        </div>
+        <div class="stage-badge" id="stageBadge">
+          <small data-i18n="stageLabel">Stage</small>
+          <span id="stageText">—</span>
+        </div>
+      </div>
+      <div class="result-meaning" id="interpretation"></div>
+      <div class="result-note" id="interpretNote"></div>
+      <div class="result-disclaimer" data-i18n="resultDisclaimer">This is an estimate for screening purposes only.</div>
+    </div>
+  </section>
+
+
+  <section>
+    <h2>¿Qué es la GFR?</h2>
+    <p>La tasa de filtración glomerular (GFR) es el indicador único más importante de la función renal. Representa el volumen de líquido filtrado desde los glomérulos hacia la cápsula de Bowman por unidad de tiempo, generalmente expresado en mL/min. En términos simples, responde a una pregunta fundamental: <strong>¿cuántos desechos pueden filtrar sus riñones de la sangre cada minuto?</strong></p>
+    <p>Sus riñones procesan aproximadamente 180 litros de sangre cada día. La mayor parte de ese líquido se reabsorbe, y solo 1–2 litros abandonan finalmente el cuerpo como orina. La GFR refleja la eficiencia de este proceso de filtración. Cuando los glomérulos se dañan por enfermedad, la capacidad de filtración disminuye, los desechos se acumulan en la sangre y el valor de GFR cae.</p>
+    <p>Un punto crucial: <strong>la GFR no puede medirse directamente</strong>. La medición precisa requiere inyectar un marcador exógeno (como inulina o iohexol) y extraer sangre a intervalos programados — un procedimiento complejo y costoso, inadecuado para el cribado rutinario. La práctica clínica se basa por tanto en la <strong>GFR estimada (eGFR)</strong>, calculada a partir de creatinina sérica, edad y sexo mediante una ecuación validada. El calculador de esta página proporciona la eGFR.</p>
+  </section>
+
+  <section>
+    <h2>eGFR vs GFR: ¿cuál es la diferencia?</h2>
+    <p>Estos dos términos se usan a menudo como sinónimos, pero en contextos clínicos significan cosas distintas:</p>
+    <table>
+      <thead>
+        <tr><th>Término</th><th>Significado</th><th>Uso típico</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>GFR</strong></td><td>Tasa de filtración glomerular verdadera, medida con marcador exógeno</td><td>Investigación, decisiones clínicas específicas, dosificación precisa de fármacos</td></tr>
+        <tr><td><strong>eGFR</strong></td><td>Valor estimado, derivado de marcadores endógenos como la creatinina</td><td>Cribado rutinario, estadificación de ERC, seguimiento longitudinal</td></tr>
+      </tbody>
+    </table>
+    <p>La precisión de la eGFR disminuye cuando la GFR verdadera es alta (por ejemplo, por encima de 90), porque la concentración de creatinina es relativamente insensible a la función renal dentro del rango normal. Un único valor alto de eGFR por tanto no garantiza una función renal completamente normal, especialmente en personas con proteinuria, diabetes o hipertensión. En esos casos, los clínicos combinan la eGFR con análisis de orina y otros marcadores.</p>
+  </section>
+
+  <section>
+    <h2>Estadios de ERC según la eGFR</h2>
+    <p>La enfermedad renal crónica (ERC) se clasifica en cinco estadios según la eGFR. Este sistema está definido por KDIGO (Kidney Disease: Improving Global Outcomes) y se usa en todo el mundo:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>eGFR (mL/min/1,73 m²)</th>
+          <th>Estadio</th>
+          <th>Significado</th>
+          <th>Nota clínica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>≥ 90</td><td>G1</td><td>Normal o alto</td><td>Función normal, pero la proteinuria requiere atención</td></tr>
+        <tr><td>60–89</td><td>G2</td><td>Ligeramente disminuido</td><td>A menudo envejecimiento normal; interpretar con otros marcadores</td></tr>
+        <tr><td>45–59</td><td>G3a</td><td>Leve a moderadamente disminuido</td><td>Seguimiento regular; evaluar riesgo cardiovascular</td></tr>
+        <tr><td>30–44</td><td>G3b</td><td>Moderada a severamente disminuido</td><td>Derivación a nefrología; ajustar dosis de medicamentos</td></tr>
+        <tr><td>15–29</td><td>G4</td><td>Severamente disminuido</td><td>Manejo especializado; preparar terapia de reemplazo renal</td></tr>
+        <tr><td>&lt; 15</td><td>G5</td><td>Falla renal</td><td>Generalmente requiere diálisis o trasplante</td></tr>
+      </tbody>
+    </table>
+    <p><strong>La ERC no se diagnostica solo con la eGFR.</strong> Según KDIGO, el daño renal requiere al menos uno de los siguientes criterios persistente más de 3 meses: albuminuria (relación albúmina/creatinina en orina ≥ 30 mg/g), anomalías del sedimento urinario, anomalías en imágenes o anomalías histológicas. Una única lectura baja de eGFR no es suficiente para el diagnóstico de ERC.</p>
+  </section>
+
+  <section>
+    <h2>Cómo interpretar su resultado</h2>
+    <p>Tras el cálculo, recibe dos informaciones clave: un valor de eGFR y el estadio de ERC correspondiente. A continuación, una guía por estadio sobre lo que significan los números y qué considerar después.</p>
+
+    <h3>eGFR ≥ 90 (G1)</h3>
+    <p>Función renal normal o alta. Sin proteinuria, hematuria u otros marcadores de daño renal, normalmente no se necesita intervención específica. Sin embargo, si tiene diabetes, hipertensión o antecedentes familiares de enfermedad renal, se recomiendan análisis anuales de orina y función renal, porque la eGFR puede permanecer normal en el daño renal temprano.</p>
+
+    <h3>eGFR 60–89 (G2)</h3>
+    <p>Ligeramente disminuido, común en adultos mayores y a menudo parte del envejecimiento normal. Si se acompaña de proteinuria, hematuria o anomalías en imágenes, se cumplen los criterios de ERC y se justifica una evaluación adicional. La G2 aislada sin otras anomalías suele manejarse con medidas de estilo de vida: control de presión y glucosa, reducción de sal y evitación de fármacos nefrotóxicos.</p>
+
+    <h3>eGFR 45–59 (G3a)</h3>
+    <p>Leve a moderadamente disminuido. Esta es una ventana crítica de intervención — la mayoría de los pacientes no tienen síntomas, pero la función renal ya está disminuyendo. Recomendaciones: repetir eGFR y proteína en orina cada 3–6 meses, mantener la presión arterial por debajo de 130/80 mmHg, evitar AINE (como ibuprofeno) y revisar con un médico los medicamentos de eliminación renal.</p>
+
+    <h3>eGFR 30–44 (G3b)</h3>
+    <p>Moderada a severamente disminuido. El riesgo de complicaciones aumenta significativamente en este estadio, incluyendo anemia, desequilibrio calcio-fósforo y acidosis metabólica. Se recomienda derivación a nefrología para evaluación sistemática. El manejo de medicamentos requiere especial precaución — muchos fármacos comunes (ciertos antibióticos, analgésicos, contrastes) necesitan ajuste de dosis o evitación.</p>
+
+    <h3>eGFR 15–29 (G4)</h3>
+    <p>Severamente disminuido. Es esencial el cuidado continuo por nefrología, y debe comenzar la preparación para terapia de reemplazo renal (diálisis o trasplante). A menudo es necesaria la restricción dietética de proteínas, potasio y fósforo; el plan concreto lo elaboran conjuntamente un dietista y un nefrólogo.</p>
+
+    <h3>eGFR &lt; 15 (G5)</h3>
+    <p>Rango de falla renal. Generalmente se requiere diálisis o evaluación para trasplante. Los síntomas pueden incluir fatiga severa, náuseas, edema y dificultad para respirar. Busque atención médica de inmediato y no ajuste el tratamiento por su cuenta.</p>
+
+    <p class="note-box"><strong>Importante:</strong> La eGFR es una estimación. Un único resultado no puede usarse como diagnóstico. El estado renal debe evaluarse a partir de tendencias, hallazgos en orina, imágenes y presentación clínica. Todas las decisiones de tratamiento deben ser tomadas por un profesional de salud cualificado.</p>
+  </section>
+
+  <section>
+    <h2>Factores que afectan la precisión de la eGFR</h2>
+    <p>Comprender estos factores le ayuda a interpretar su resultado con mayor precisión:</p>
+
+    <h3>Factores que disminuyen la eGFR</h3>
+    <ul>
+      <li><strong>Alta masa muscular</strong>: atletas y personas que entrenan fuerza tienen creatinina basal más alta, lo que subestima la eGFR</li>
+      <li><strong>Dieta alta en proteínas</strong>: el consumo elevado de carne puede elevar transitoriamente la creatinina</li>
+      <li><strong>Suplementos de creatina</strong>: la creatina en suplementos fitness se convierte en creatinina</li>
+      <li><strong>Ciertos medicamentos</strong>: trimetoprim y cimetidina inhiben la secreción de creatinina</li>
+      <li><strong>Deshidratación</strong>: el volumen sanguíneo reducido eleva la concentración de creatinina</li>
+    </ul>
+
+    <h3>Factores que aumentan la eGFR</h3>
+    <ul>
+      <li><strong>Baja masa muscular</strong>: adultos mayores, pacientes encamados y amputados tienen creatinina basal más baja</li>
+      <li><strong>Enfermedad hepática grave</strong>: síntesis hepática de creatina reducida</li>
+      <li><strong>Desnutrición</strong>: ingesta crónica baja en proteínas</li>
+      <li><strong>Embarazo</strong>: el aumento del flujo sanguíneo renal diluye la creatinina</li>
+    </ul>
+
+    <p>En estas situaciones, los clínicos pueden usar <strong>cistatina C</strong> como marcador complementario. En 2021, CKD-EPI también publicó una ecuación combinada creatinina-cistatina C, más precisa en poblaciones con masa muscular anormal. Si se encuentra en alguna de las categorías anteriores, pregunte a su médico si son apropiados análisis adicionales.</p>
+  </section>
+
+  <section>
+    <h2>Fórmula y base de evidencia</h2>
+    <p>Este calculador utiliza la <strong>ecuación CKD-EPI de creatinina de 2021</strong>, recomendada conjuntamente por la National Kidney Foundation (NKF) y la American Society of Nephrology (ASN). Es actualmente la ecuación de eGFR más utilizada en el mundo.</p>
+
+    <h3>La fórmula</h3>
+    <p class="formula">eGFR = 142 × min(Scr/κ, 1)<sup>α</sup> × max(Scr/κ, 1)<sup>−1.200</sup> × 0.9938<sup>age</sup> × 1.012 (if female)</p>
+
+    <p>Donde:</p>
+    <ul>
+      <li><strong>Scr</strong>: creatinina sérica en mg/dL</li>
+      <li><strong>κ</strong>: 0,7 para mujeres, 0,9 para hombres</li>
+      <li><strong>α</strong>: −0,241 para mujeres, −0,302 para hombres</li>
+      <li><strong>age</strong>: edad en años</li>
+      <li><strong>1,012</strong>: factor de corrección femenino</li>
+    </ul>
+
+    <h3>Por qué se eliminó el coeficiente racial en 2021</h3>
+    <p>Antes de 2021, la ecuación CKD-EPI incluía un factor de corrección "afroamericano", basado en la suposición de que los pacientes negros tienen mayor masa muscular promedio. Esta suposición carecía de evidencia biológica y fue criticada por posiblemente agravar las disparidades sanitarias — con la misma función renal, los pacientes negros recibirían una estimación de eGFR más alta, retrasando la derivación y el tratamiento.</p>
+    <p>La revisión de 2021 eliminó el coeficiente racial. La declaración conjunta de NKF y ASN señaló que <strong>la raza es una construcción social, no una variable biológica</strong>. La nueva ecuación funciona algo diferente en poblaciones negras pero se considera más equitativa y es ahora el estándar.</p>
+
+    <h3>Otras ecuaciones comunes</h3>
+    <ul>
+      <li><strong>MDRD</strong>: publicada en 1999, ampliamente usada históricamente, pero menos precisa por encima de eGFR 60; hoy en gran medida reemplazada por CKD-EPI</li>
+      <li><strong>CKD-EPI cistatina C</strong>: usa cistatina C sola o combinada con creatinina, para poblaciones con masa muscular anormal</li>
+      <li><strong>Schwartz</strong>: ecuación pediátrica, usada por debajo de 18 años</li>
+      <li><strong>Cockcroft-Gault</strong>: principalmente para dosificación de fármacos, no para estadificación de ERC</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Preguntas frecuentes</h2>
+
+    <h3>¿Cuál es una eGFR normal?</h3>
+    <p>Generalmente, por encima de 90 mL/min/1,73 m² se considera normal. Los rangos normales varían con la edad: los adultos jóvenes suelen estar entre 100–120, disminuyendo aproximadamente 1 mL/min por año después de los 40. En adultos mayores de 60, una eGFR de 60–89 puede reflejar envejecimiento normal en lugar de enfermedad.</p>
+
+    <h3>¿Puede mejorar la eGFR?</h3>
+    <p>Depende de la causa. En el daño renal agudo (por deshidratación, infección o medicamentos), la eGFR puede recuperarse una vez eliminado el desencadenante. En la enfermedad renal crónica, la eGFR típicamente disminuye lentamente, y el tratamiento busca ralentizar el descenso, no revertirlo. En algunos casos, controlar presión, glucosa y proteinuria puede estabilizar o mejorar ligeramente la eGFR.</p>
+
+    <h3>¿Con qué frecuencia debo hacerme la prueba de eGFR?</h3>
+    <p>Para personas sanas sin factores de riesgo renal, un análisis anual como parte de un chequeo rutinario es suficiente. Para ERC diagnosticada, la frecuencia depende del estadio: anualmente para G1–G2, cada 6 meses para G3, y cada 3 meses o más frecuentemente para G4–G5. Su médico debe determinar el calendario específico.</p>
+
+    <h3>¿Cómo convierto mg/dL y µmol/L?</h3>
+    <p>La conversión es: 1 mg/dL = 88,42 µmol/L. Estados Unidos y algunos países europeos usan mg/dL; China, Japón y la mayor parte de Europa usan µmol/L. Este calculador convierte automáticamente según la unidad que seleccione.</p>
+
+    <h3>¿Por qué hay un factor de corrección femenino?</h3>
+    <p>Con el mismo nivel de función renal, las mujeres tienen menor masa muscular promedio y por tanto menor creatinina sérica basal. Sin corrección, la eGFR femenina se sobreestimaría sistemáticamente. El factor 1,012 y los diferentes parámetros κ y α corrigen esta diferencia.</p>
+
+    <h3>¿Puede este calculador reemplazar un análisis hospitalario?</h3>
+    <p>No. Esta herramienta proporciona una estimación basada en una fórmula, destinada a educación y cribado preliminar. Los laboratorios hospitalarios usan ensayos estandarizados y control de calidad, produciendo resultados más fiables. Si tiene preocupaciones sobre la función renal, confíe en los resultados hospitalarios y el juicio de su médico.</p>
+
+    <h3>¿Por qué mi eGFR difiere del informe hospitalario?</h3>
+    <p>Posibles razones: el hospital usó una ecuación diferente (como MDRD o una fórmula de cistatina C), un ensayo de creatinina distinto, o su unidad de entrada no coincide con la del informe. Si la diferencia es grande, use el informe hospitalario como referencia y pregunte a su médico qué ecuación se utilizó.</p>
+
+    <h3>¿Pueden los niños usar este calculador?</h3>
+    <p>No. La ecuación CKD-EPI de 2021 está validada solo para adultos de 18 años o más. Los niños requieren la ecuación de Schwartz o la más reciente CKiD U25, que tienen en cuenta el crecimiento y desarrollo.</p>
+  </section>
+
+  <section>
+    <div class="disclaimer"><strong>Aviso médico:</strong> Este calculador es solo para fines educativos y de cribado. No es un diagnóstico ni reemplaza el consejo médico profesional. Si tiene preocupaciones sobre su función renal, consulte a un profesional de salud cualificado. Todos los cálculos se ejecutan en su navegador; no recopilamos, almacenamos ni transmitimos datos de salud.</div>
+  </section>
+</main>
+
+<footer class="footer" data-i18n="footer">Runs entirely in your browser. No data is collected or transmitted.</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/calculator.js"></script>
+</body>
+</html>

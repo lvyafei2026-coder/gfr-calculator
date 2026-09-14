@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GFR Calculator — Estimate Kidney Function (CKD-EPI 2021)</title>
+<meta name="description" content="Free GFR calculator using the 2021 CKD-EPI creatinine equation. Enter age, sex, and serum creatinine to estimate eGFR and see your CKD stage. Runs entirely in your browser, no data stored.">
+<meta name="keywords" content="gfr calculator, egfr calculator, glomerular filtration rate, ckd-epi 2021, kidney function calculator, creatinine clearance">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#2563eb">
+
+<link rel="canonical" href="https://yourdomain.com/">
+<link rel="alternate" hreflang="en" href="https://yourdomain.com/">
+<link rel="alternate" hreflang="zh-Hans" href="https://yourdomain.com/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://yourdomain.com/zh-tw/">
+<link rel="alternate" hreflang="ja" href="https://yourdomain.com/ja/">
+<link rel="alternate" hreflang="ko" href="https://yourdomain.com/ko/">
+<link rel="alternate" hreflang="de" href="https://yourdomain.com/de/">
+<link rel="alternate" hreflang="ru" href="https://yourdomain.com/ru/">
+<link rel="alternate" hreflang="es" href="https://yourdomain.com/es/">
+<link rel="alternate" hreflang="x-default" href="https://yourdomain.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="GFR Calculator — Estimate Kidney Function (CKD-EPI 2021)">
+<meta property="og:description" content="Free GFR calculator using the 2021 CKD-EPI creatinine equation. Runs entirely in your browser.">
+<meta property="og:url" content="https://yourdomain.com/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "GFR Calculator",
+  "url": "https://yourdomain.com/",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Any",
+  "description": "Free GFR calculator using the 2021 CKD-EPI creatinine equation to estimate kidney function and CKD stage.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="lang-switch">
+    <select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
+      <option value="en">English</option>
+      <option value="zh">简体中文</option>
+      <option value="zh-TW">繁體中文</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="de">Deutsch</option>
+      <option value="ru">Русский</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+  <div class="hero-inner">
+    <h1 data-i18n="title">Glomerular Filtration Rate (GFR) Calculator</h1>
+    <p data-i18n="subtitle">Estimate kidney function using the 2021 CKD-EPI creatinine equation. All calculations run in your browser — no data is sent or stored.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card">
+    <h2 class="visually-hidden" data-i18n="calcHeading">GFR Calculator</h2>
+    <div class="row">
+      <div>
+        <label for="age" data-i18n="ageLabel">Age (years)</label>
+        <input type="number" id="age" min="18" max="120" placeholder="58" inputmode="numeric">
+      </div>
+      <div>
+        <label for="sex" data-i18n="sexLabel">Sex</label>
+        <select id="sex">
+          <option value="" data-i18n="sexSelect">Select</option>
+          <option value="female" data-i18n="female">Female</option>
+          <option value="male" data-i18n="male">Male</option>
+        </select>
+      </div>
+    </div>
+    <label for="creat" data-i18n="creatLabel">Serum creatinine</label>
+    <div class="row">
+      <div style="flex:2">
+        <input type="number" id="creat" step="0.01" min="0.1" placeholder="0.9" inputmode="decimal">
+      </div>
+      <div style="flex:1">
+        <select id="unit" aria-label="Creatinine unit">
+          <option value="mgdl">mg/dL</option>
+          <option value="umol">µmol/L</option>
+        </select>
+      </div>
+    </div>
+    <button class="calc" type="button" onclick="calculate()" data-i18n="calcBtn">Calculate eGFR</button>
+
+    <div id="result" role="region" aria-live="polite">
+      <div class="result-top">
+        <div class="result-left">
+          <div class="result-label" data-i18n="resultLabel">Estimated GFR</div>
+          <div class="egfr-num">
+            <span id="egfrValue">—</span>
+            <span class="egfr-unit">mL/min/1.73m²</span>
+          </div>
+        </div>
+        <div class="stage-badge" id="stageBadge">
+          <small data-i18n="stageLabel">Stage</small>
+          <span id="stageText">—</span>
+        </div>
+      </div>
+      <div class="result-meaning" id="interpretation"></div>
+      <div class="result-note" id="interpretNote"></div>
+      <div class="result-disclaimer" data-i18n="resultDisclaimer">This is an estimate for screening purposes only.</div>
+    </div>
+  </section>
+
+
+  <section>
+    <h2>What is GFR?</h2>
+    <p>Glomerular Filtration Rate (GFR) is the most important single indicator of kidney function. It represents the volume of fluid filtered from the glomeruli into the Bowman's capsule per unit time, usually expressed in mL/min. In plain terms, it answers one fundamental question: <strong>how much waste can your kidneys filter from your blood each minute?</strong></p>
+    <p>Your kidneys process roughly 180 liters of blood every day. Most of that fluid is reabsorbed, with only 1–2 liters ultimately leaving the body as urine. GFR reflects the efficiency of this filtration process. When the glomeruli are damaged by disease, filtration capacity drops, waste accumulates in the blood, and the GFR value falls.</p>
+    <p>One crucial point: <strong>GFR cannot be measured directly</strong>. Accurate measurement requires injecting an exogenous marker (such as inulin or iohexol) and drawing blood at timed intervals — a complex and expensive procedure unsuitable for routine screening. Clinical practice therefore relies on the <strong>estimated GFR (eGFR)</strong>, calculated from serum creatinine, age, and sex using a validated equation. The calculator on this page provides eGFR.</p>
+  </section>
+
+  <section>
+    <h2>eGFR vs GFR: what's the difference?</h2>
+    <p>These two terms are often used interchangeably, but in clinical contexts they mean different things:</p>
+    <table>
+      <thead>
+        <tr><th>Term</th><th>Meaning</th><th>Typical use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>GFR</strong></td><td>True glomerular filtration rate, measured with an exogenous marker</td><td>Research, specific clinical decisions, precise drug dosing</td></tr>
+        <tr><td><strong>eGFR</strong></td><td>Estimated value, derived from endogenous markers such as creatinine</td><td>Routine screening, CKD staging, longitudinal monitoring</td></tr>
+      </tbody>
+    </table>
+    <p>The accuracy of eGFR declines when true GFR is high (for example, above 90), because creatinine concentration is relatively insensitive to kidney function within the normal range. A single high eGFR therefore does not guarantee fully normal kidney function, especially in people with proteinuria, diabetes, or hypertension. In those cases, clinicians combine eGFR with urine tests and other markers.</p>
+  </section>
+
+  <section>
+    <h2>CKD stages based on eGFR</h2>
+    <p>Chronic Kidney Disease (CKD) is classified into five stages based on eGFR. This staging system is defined by KDIGO (Kidney Disease: Improving Global Outcomes) and is used worldwide:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>eGFR (mL/min/1.73m²)</th>
+          <th>Stage</th>
+          <th>Meaning</th>
+          <th>Clinical note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>≥ 90</td><td>G1</td><td>Normal or high</td><td>Normal function, but proteinuria still warrants attention</td></tr>
+        <tr><td>60–89</td><td>G2</td><td>Mildly decreased</td><td>Often normal aging; interpret alongside other markers</td></tr>
+        <tr><td>45–59</td><td>G3a</td><td>Mild to moderately decreased</td><td>Regular follow-up; assess cardiovascular risk</td></tr>
+        <tr><td>30–44</td><td>G3b</td><td>Moderately to severely decreased</td><td>Nephrology referral; adjust medication doses</td></tr>
+        <tr><td>15–29</td><td>G4</td><td>Severely decreased</td><td>Specialist management; prepare for renal replacement therapy</td></tr>
+        <tr><td>&lt; 15</td><td>G5</td><td>Kidney failure</td><td>Usually requires dialysis or transplant</td></tr>
+      </tbody>
+    </table>
+    <p><strong>CKD is not diagnosed from eGFR alone.</strong> Per KDIGO, kidney damage requires at least one of the following persisting for more than 3 months: albuminuria (urine albumin-to-creatinine ratio ≥ 30 mg/g), urine sediment abnormalities, imaging abnormalities, or histologic abnormalities. A single low eGFR reading is not sufficient for a CKD diagnosis.</p>
+  </section>
+
+  <section>
+    <h2>How to interpret your result</h2>
+    <p>After calculating, you receive two key pieces of information: an eGFR value and the corresponding CKD stage. Below is a stage-by-stage guide to what the numbers mean and what to consider next.</p>
+
+    <h3>eGFR ≥ 90 (G1)</h3>
+    <p>Normal or high kidney function. Without proteinuria, hematuria, or other markers of kidney damage, no specific intervention is usually needed. However, if you have diabetes, hypertension, or a family history of kidney disease, annual urine and kidney function tests are recommended, because eGFR can remain normal in early kidney damage.</p>
+
+    <h3>eGFR 60–89 (G2)</h3>
+    <p>Mildly decreased, common in older adults and often part of normal aging. If accompanied by proteinuria, hematuria, or imaging abnormalities, the criteria for CKD are met and further evaluation is warranted. Isolated G2 without other abnormalities is typically managed with lifestyle measures: blood pressure and glucose control, reduced salt intake, and avoidance of nephrotoxic drugs.</p>
+
+    <h3>eGFR 45–59 (G3a)</h3>
+    <p>Mild to moderately decreased. This is a critical intervention window — most patients have no symptoms, yet kidney function is already declining. Recommendations: recheck eGFR and urine protein every 3–6 months, keep blood pressure below 130/80 mmHg, avoid NSAIDs such as ibuprofen, and review renally cleared medications with a physician.</p>
+
+    <h3>eGFR 30–44 (G3b)</h3>
+    <p>Moderately to severely decreased. Complication risk rises significantly at this stage, including anemia, calcium-phosphate imbalance, and metabolic acidosis. Nephrology referral is recommended for systematic evaluation. Medication management requires extra caution — many common drugs (certain antibiotics, analgesics, contrast agents) need dose adjustment or avoidance.</p>
+
+    <h3>eGFR 15–29 (G4)</h3>
+    <p>Severely decreased. Ongoing nephrology care is essential, and preparation for renal replacement therapy (dialysis or transplant) should begin. Dietary restriction of protein, potassium, and phosphorus is often necessary, with the specific plan developed jointly by a dietitian and nephrologist.</p>
+
+    <h3>eGFR &lt; 15 (G5)</h3>
+    <p>Kidney failure range. Dialysis or transplant evaluation is usually required. Symptoms may include severe fatigue, nausea, edema, and shortness of breath. Seek medical care promptly and do not adjust treatment on your own.</p>
+
+    <p class="note-box"><strong>Important:</strong> eGFR is an estimate. A single result cannot be used as a diagnosis. Kidney status should be assessed from trends over time, urine findings, imaging, and clinical presentation. All treatment decisions must be made by a qualified healthcare professional.</p>
+  </section>
+
+  <section>
+    <h2>Factors that affect eGFR accuracy</h2>
+    <p>Understanding these factors helps you interpret your result more accurately:</p>
+
+    <h3>Factors that lower eGFR</h3>
+    <ul>
+      <li><strong>High muscle mass</strong>: athletes and regular weight trainers have higher baseline creatinine, leading to underestimated eGFR</li>
+      <li><strong>High-protein diet</strong>: heavy meat intake can transiently raise creatinine</li>
+      <li><strong>Creatine supplements</strong>: creatine in fitness supplements converts to creatinine</li>
+      <li><strong>Certain medications</strong>: trimethoprim and cimetidine inhibit creatinine secretion</li>
+      <li><strong>Dehydration</strong>: reduced blood volume raises creatinine concentration</li>
+    </ul>
+
+    <h3>Factors that raise eGFR</h3>
+    <ul>
+      <li><strong>Low muscle mass</strong>: older adults, bedridden patients, and amputees have lower baseline creatinine</li>
+      <li><strong>Severe liver disease</strong>: reduced hepatic creatine synthesis</li>
+      <li><strong>Malnutrition</strong>: chronic low-protein intake</li>
+      <li><strong>Pregnancy</strong>: increased renal blood flow dilutes creatinine</li>
+    </ul>
+
+    <p>For these situations, clinicians may use <strong>cystatin C</strong> as a complementary marker. In 2021, CKD-EPI also published a combined creatinine-cystatin C equation that is more accurate in populations with abnormal muscle mass. If you fall into any of the categories above, ask your doctor whether additional testing is appropriate.</p>
+  </section>
+
+  <section>
+    <h2>Formula and evidence base</h2>
+    <p>This calculator uses the <strong>2021 CKD-EPI creatinine equation</strong>, jointly recommended by the National Kidney Foundation (NKF) and the American Society of Nephrology (ASN). It is currently the most widely used eGFR equation worldwide.</p>
+
+    <h3>The formula</h3>
+    <p class="formula">eGFR = 142 × min(Scr/κ, 1)<sup>α</sup> × max(Scr/κ, 1)<sup>−1.200</sup> × 0.9938<sup>age</sup> × 1.012 (if female)</p>
+
+    <p>Where:</p>
+    <ul>
+      <li><strong>Scr</strong>: serum creatinine in mg/dL</li>
+      <li><strong>κ</strong>: 0.7 for females, 0.9 for males</li>
+      <li><strong>α</strong>: −0.241 for females, −0.302 for males</li>
+      <li><strong>age</strong>: age in years</li>
+      <li><strong>1.012</strong>: female correction factor</li>
+    </ul>
+
+    <h3>Why the race coefficient was removed in 2021</h3>
+    <p>Before 2021, the CKD-EPI equation included an "African American" correction factor, based on the assumption that Black patients have higher average muscle mass. This assumption lacked biological evidence and was criticized for potentially worsening health disparities — at the same kidney function, Black patients would receive a higher eGFR estimate, delaying referral and treatment.</p>
+    <p>The 2021 revision removed the race coefficient. The joint NKF and ASN statement noted that <strong>race is a social construct, not a biological variable</strong>. The new equation performs slightly differently in Black populations but is considered more equitable and is now the standard.</p>
+
+    <h3>Other common equations</h3>
+    <ul>
+      <li><strong>MDRD</strong>: published in 1999, widely used historically, but less accurate above eGFR 60; now largely replaced by CKD-EPI</li>
+      <li><strong>CKD-EPI cystatin C</strong>: uses cystatin C alone or combined with creatinine, for populations with abnormal muscle mass</li>
+      <li><strong>Schwartz</strong>: pediatric equation, used under 18 years</li>
+      <li><strong>Cockcroft-Gault</strong>: primarily for drug dosing, not for CKD staging</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Frequently asked questions</h2>
+
+    <h3>What is a normal eGFR?</h3>
+    <p>Generally, above 90 mL/min/1.73m² is considered normal. Normal ranges vary with age: young adults typically range from 100–120, declining by about 1 mL/min per year after age 40. In adults over 60, an eGFR of 60–89 may reflect normal aging rather than disease.</p>
+
+    <h3>Can eGFR improve?</h3>
+    <p>It depends on the cause. In acute kidney injury (from dehydration, infection, or medication), eGFR can recover once the trigger is removed. In chronic kidney disease, eGFR typically declines slowly, and treatment aims to slow the decline rather than reverse it. In some cases, controlling blood pressure, glucose, and proteinuria can stabilize or slightly improve eGFR.</p>
+
+    <h3>How often should I test eGFR?</h3>
+    <p>For healthy individuals without kidney disease risk factors, annual testing as part of a routine physical is sufficient. For diagnosed CKD, frequency depends on stage: annually for G1–G2, every 6 months for G3, and every 3 months or more frequently for G4–G5. Your physician should determine the specific schedule.</p>
+
+    <h3>How do I convert mg/dL and µmol/L?</h3>
+    <p>The conversion is: 1 mg/dL = 88.42 µmol/L. The United States and some European countries use mg/dL; China, Japan, and most of Europe use µmol/L. This calculator converts automatically based on the unit you select.</p>
+
+    <h3>Why is there a female correction factor?</h3>
+    <p>At the same kidney function level, women have lower average muscle mass and therefore lower baseline serum creatinine. Without correction, female eGFR would be systematically overestimated. The 1.012 factor and the different κ and α parameters exist to correct this difference.</p>
+
+    <h3>Can this calculator replace a hospital test?</h3>
+    <p>No. This tool provides an estimate based on a formula, intended for education and preliminary screening. Hospital laboratories use standardized assays and quality control, producing more reliable results. If you have concerns about kidney function, rely on hospital test results and your physician's judgment.</p>
+
+    <h3>Why does my eGFR differ from my hospital report?</h3>
+    <p>Possible reasons: the hospital used a different equation (such as MDRD or a cystatin C formula), a different creatinine assay, or your input unit does not match the report unit. If the difference is large, use the hospital report as the reference and ask your doctor which equation was used.</p>
+
+    <h3>Can children use this calculator?</h3>
+    <p>No. The 2021 CKD-EPI equation is validated only for adults aged 18 and older. Children require the Schwartz equation or the newer CKiD U25 equation, which account for growth and development.</p>
+  </section>
+
+  <section>
+    <div class="disclaimer"><strong>Medical disclaimer:</strong> This calculator is for educational and screening purposes only. It is not a diagnosis and does not replace professional medical advice. If you have concerns about your kidney function, consult a qualified healthcare provider. All calculations run in your browser; we do not collect, store, or transmit any health data.</div>
+  </section>
+</main>
+
+<footer class="footer" data-i18n="footer">Runs entirely in your browser. No data is collected or transmitted.</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/calculator.js"></script>
+</body>
+</html>

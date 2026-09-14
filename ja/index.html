@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GFR Calculator — Estimate Kidney Function (CKD-EPI 2021)</title>
+<meta name="description" content="Free GFR calculator using the 2021 CKD-EPI creatinine equation. Enter age, sex, and serum creatinine to estimate eGFR and see your CKD stage. Runs entirely in your browser, no data stored.">
+<meta name="keywords" content="gfr calculator, egfr calculator, glomerular filtration rate, ckd-epi 2021, kidney function calculator, creatinine clearance">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#2563eb">
+
+<link rel="canonical" href="https://yourdomain.com/ja/">
+<link rel="alternate" hreflang="en" href="https://yourdomain.com/">
+<link rel="alternate" hreflang="zh-Hans" href="https://yourdomain.com/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://yourdomain.com/zh-tw/">
+<link rel="alternate" hreflang="ja" href="https://yourdomain.com/ja/">
+<link rel="alternate" hreflang="ko" href="https://yourdomain.com/ko/">
+<link rel="alternate" hreflang="de" href="https://yourdomain.com/de/">
+<link rel="alternate" hreflang="ru" href="https://yourdomain.com/ru/">
+<link rel="alternate" hreflang="es" href="https://yourdomain.com/es/">
+<link rel="alternate" hreflang="x-default" href="https://yourdomain.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="GFR Calculator — Estimate Kidney Function (CKD-EPI 2021)">
+<meta property="og:description" content="Free GFR calculator using the 2021 CKD-EPI creatinine equation. Runs entirely in your browser.">
+<meta property="og:url" content="https://yourdomain.com/ja/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "GFR Calculator",
+  "url": "https://yourdomain.com/ja/",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Any",
+  "description": "Free GFR calculator using the 2021 CKD-EPI creatinine equation to estimate kidney function and CKD stage.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<script>window.__FORCE_LANG__ = 'ja';</script>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="lang-switch">
+    <select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
+      <option value="en">English</option>
+      <option value="zh">简体中文</option>
+      <option value="zh-TW">繁體中文</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="de">Deutsch</option>
+      <option value="ru">Русский</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+  <div class="hero-inner">
+    <h1 data-i18n="title">Glomerular Filtration Rate (GFR) Calculator</h1>
+    <p data-i18n="subtitle">Estimate kidney function using the 2021 CKD-EPI creatinine equation. All calculations run in your browser — no data is sent or stored.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card">
+    <h2 class="visually-hidden" data-i18n="calcHeading">GFR Calculator</h2>
+    <div class="row">
+      <div>
+        <label for="age" data-i18n="ageLabel">Age (years)</label>
+        <input type="number" id="age" min="18" max="120" placeholder="58" inputmode="numeric">
+      </div>
+      <div>
+        <label for="sex" data-i18n="sexLabel">Sex</label>
+        <select id="sex">
+          <option value="" data-i18n="sexSelect">Select</option>
+          <option value="female" data-i18n="female">Female</option>
+          <option value="male" data-i18n="male">Male</option>
+        </select>
+      </div>
+    </div>
+    <label for="creat" data-i18n="creatLabel">Serum creatinine</label>
+    <div class="row">
+      <div style="flex:2">
+        <input type="number" id="creat" step="0.01" min="0.1" placeholder="0.9" inputmode="decimal">
+      </div>
+      <div style="flex:1">
+        <select id="unit" aria-label="Creatinine unit">
+          <option value="mgdl">mg/dL</option>
+          <option value="umol">µmol/L</option>
+        </select>
+      </div>
+    </div>
+    <button class="calc" type="button" onclick="calculate()" data-i18n="calcBtn">Calculate eGFR</button>
+
+    <div id="result" role="region" aria-live="polite">
+      <div class="result-top">
+        <div class="result-left">
+          <div class="result-label" data-i18n="resultLabel">Estimated GFR</div>
+          <div class="egfr-num">
+            <span id="egfrValue">—</span>
+            <span class="egfr-unit">mL/min/1.73m²</span>
+          </div>
+        </div>
+        <div class="stage-badge" id="stageBadge">
+          <small data-i18n="stageLabel">Stage</small>
+          <span id="stageText">—</span>
+        </div>
+      </div>
+      <div class="result-meaning" id="interpretation"></div>
+      <div class="result-note" id="interpretNote"></div>
+      <div class="result-disclaimer" data-i18n="resultDisclaimer">This is an estimate for screening purposes only.</div>
+    </div>
+  </section>
+
+
+  <section>
+    <h2>GFR とは？</h2>
+    <p>糸球体濾過量（Glomerular Filtration Rate、GFR）は、腎機能を評価する最も重要な指標です。単位時間（通常は1分間）あたりに両側の腎臓の糸球体から血液中へ濾過される原尿の体積を表し、単位は mL/min です。平たく言えば、<strong>腎臓が1分間にどれだけの老廃物を血液から濾過できるか</strong>という根本的な問いに答えるものです。</p>
+    <p>腎臓は毎日約180リットルの血液を処理しています。そのほとんどは再吸収され、最終的に尿として排出されるのは約1〜2リットルです。GFR はこの濾過プロセスの効率を反映します。糸球体が疾患で損傷すると濾過能力が低下し、老廃物が血液中に蓄積し、GFR 値が下がります。</p>
+    <p>重要な点として、<strong>GFR は直接測定できません</strong>。正確な測定には外因性マーカー（イヌリンやイオヘキソールなど）を体内に注射し、定時に採血して分析する必要があり、複雑で高コストなため日常的なスクリーニングには適しません。そのため臨床では、血清クレアチニン、年齢、性別などのパラメータから検証済みの式で逆算した<strong>推定値（eGFR）</strong>が用いられます。本ページの計算ツールが提供するのは eGFR です。</p>
+  </section>
+
+  <section>
+    <h2>eGFR と GFR の違い</h2>
+    <p>この2つの用語は混同されがちですが、臨床的文脈では意味が異なります：</p>
+    <table>
+      <thead>
+        <tr><th>指標</th><th>意味</th><th>使用場面</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>GFR</strong></td><td>真の糸球体濾過量。外因性マーカーで直接測定</td><td>研究、特殊な臨床判断、薬剤投与量の精密計算</td></tr>
+        <tr><td><strong>eGFR</strong></td><td>推定値。クレアチニンなどの内因性指標から逆算</td><td>日常的スクリーニング、CKD 病期分類、経過観察</td></tr>
+      </tbody>
+    </table>
+    <p>eGFR の精度は GFR が高いとき（例えば90以上）に低下します。クレアチニンが正常範囲内にあると、その濃度変化が腎機能を十分に反映しないためです。したがって、<strong>単回の eGFR が高値でも腎機能が完全に正常とは限りません</strong>。特にタンパク尿、糖尿病、高血圧のリスクがある場合は、医師が尿検査やその他の指標と組み合わせて総合的に判断します。</p>
+  </section>
+
+  <section>
+    <h2>eGFR に基づく CKD ステージ</h2>
+    <p>慢性腎臓病（Chronic Kidney Disease、CKD）は eGFR 値によって5つのステージに分類されます。この分類体系は KDIGO（Kidney Disease: Improving Global Outcomes）が定め、世界的に使用されています：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>eGFR (mL/min/1.73m²)</th>
+          <th>ステージ</th>
+          <th>意味</th>
+          <th>臨床的注意</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>≥ 90</td><td>G1</td><td>正常または高値</td><td>腎機能は正常だが、タンパク尿があれば要注意</td></tr>
+        <tr><td>60–89</td><td>G2</td><td>軽度低下</td><td>多くは正常な加齢。他の指標と併せて判断</td></tr>
+        <tr><td>45–59</td><td>G3a</td><td>軽度〜中等度低下</td><td>定期的な経過観察。心血管リスクの評価</td></tr>
+        <tr><td>30–44</td><td>G3b</td><td>中等度〜重度低下</td><td>専門医評価が必要。薬剤用量の調整に注意</td></tr>
+        <tr><td>15–29</td><td>G4</td><td>重度低下</td><td>腎臓専門医による管理。腎代替療法の準備</td></tr>
+        <tr><td>&lt; 15</td><td>G5</td><td>腎不全</td><td>通常、透析または腎移植が必要</td></tr>
+      </tbody>
+    </table>
+    <p><strong>CKD の診断は eGFR だけではできません。</strong>KDIGO 基準では、腎障害の判定には以下のうち少なくとも1つが3ヶ月以上持続することが必要です：アルブミン尿（尿アルブミン/クレアチニン比 ≥ 30 mg/g）、尿沈渣異常、画像異常、または腎病理学的異常。単回の eGFR 低値だけでは CKD の確定診断には不十分です。</p>
+  </section>
+
+  <section>
+    <h2>結果の読み方</h2>
+    <p>計算後、eGFR 値とそれに対応する CKD ステージの2つの情報が得られます。以下、ステージ別に具体的な解釈と行動の目安を示します。</p>
+
+    <h3>eGFR ≥ 90（G1）の場合</h3>
+    <p>腎機能は正常または高値です。タンパク尿、血尿、その他の腎障害マーカーがなければ、通常は特別な介入は不要です。ただし糖尿病、高血圧、腎臓病の家族歴がある場合は、年1回の尿検査と腎機能検査を推奨します。早期の腎障害では eGFR が正常を示すことがあるためです。</p>
+
+    <h3>eGFR 60–89（G2）の場合</h3>
+    <p>軽度低下。中高年に多く、正常な加齢の一部である可能性があります。タンパク尿、血尿、画像異常を伴う場合は CKD の診断基準を満たし、さらなる評価が必要です。単独の G2 で他の異常がない場合は、生活習慣の改善（血圧・血糖管理、減塩、腎毒性薬の回避）が中心となります。</p>
+
+    <h3>eGFR 45–59（G3a）の場合</h3>
+    <p>軽度〜中等度低下。この段階は介入の重要な窓口です。多くの患者は無症状ですが、腎機能はすでに低下し続けています。推奨：3〜6ヶ月ごとに eGFR と尿タンパクを再検査、血圧を 130/80 mmHg 未満に維持、NSAIDs（イブプロフェンなど）を避ける、腎排泄性薬剤の用量を医師と見直す。</p>
+
+    <h3>eGFR 30–44（G3b）の場合</h3>
+    <p>中等度〜重度低下。この段階では貧血、カルシウム・リン代謝異常、代謝性アシドーシスなどの合併症リスクが明らかに上昇します。腎臓専門医への紹介を推奨します。薬剤管理には特に注意が必要で、多くの一般的な薬（一部の抗生物質、鎮痛薬、造影剤）は用量調整または回避が必要です。</p>
+
+    <h3>eGFR 15–29（G4）の場合</h3>
+    <p>重度低下。腎臓専門医による継続的管理が不可欠で、腎代替療法（透析または移植）の準備を開始すべきです。タンパク質、カリウム、リンの摂取制限が必要になることが多く、具体的な計画は管理栄養士と腎臓内科医が共同で作成します。</p>
+
+    <h3>eGFR &lt; 15（G5）の場合</h3>
+    <p>腎不全の範囲。通常、透析の開始または腎移植の評価が必要です。症状には重度の疲労、吐き気、浮腫、息切れなどが含まれます。速やかに受診し、自己判断で治療を調整しないでください。</p>
+
+    <p class="note-box"><strong>重要：</strong>eGFR は推定値です。単回の結果を診断の根拠にすることはできません。腎機能の評価には、経時的な傾向、尿検査所見、画像検査、臨床症状を組み合わせる必要があります。すべての治療判断は資格を持つ医療専門家が行うべきです。</p>
+  </section>
+
+  <section>
+    <h2>eGFR の精度に影響する要因</h2>
+    <p>これらの要因を理解することで、結果をより正確に解釈できます：</p>
+
+    <h3>eGFR を低くする要因</h3>
+    <ul>
+      <li><strong>筋肉量が多い</strong>：アスリートや筋トレ習慣のある人はクレアチニン基準値が高く、eGFR が過小評価される</li>
+      <li><strong>高タンパク食</strong>：短期間の大量肉類摂取でクレアチニンが上昇</li>
+      <li><strong>クレアチンサプリメント</strong>：フィットネスサプリのクレアチンがクレアチニンに変換される</li>
+      <li><strong>一部の薬剤</strong>：トリメトプリム、シメチジンはクレアチニン排泄を阻害する</li>
+      <li><strong>脱水</strong>：循環血液量の低下でクレアチニン濃度が上昇</li>
+    </ul>
+
+    <h3>eGFR を高くする要因</h3>
+    <ul>
+      <li><strong>筋肉量が少ない</strong>：高齢者、長期臥床者、切断患者はクレアチニン基準値が低い</li>
+      <li><strong>重度の肝疾患</strong>：肝臓でのクレアチニン合成が減少</li>
+      <li><strong>栄養不良</strong>：長期的な低タンパク食</li>
+      <li><strong>妊娠</strong>：腎血流量増加によりクレアチニンが希釈される</li>
+    </ul>
+
+    <p>これらの状況では、医師が補助指標として<strong>シスタチン C（Cystatin C）</strong>を検討することがあります。2021年には CKD-EPI からクレアチニンとシスタチン C の併用式も発表され、筋肉量が異常な集団でより正確です。上記のいずれかに該当する場合は、追加検査の必要性を医師に相談してください。</p>
+  </section>
+
+  <section>
+    <h2>計算式と根拠</h2>
+    <p>本計算ツールは <strong>2021年 CKD-EPI クレアチニン式</strong>を使用しています。これは米国腎臓財団（NKF）と米国腎臓学会（ASN）が共同で推奨するもので、現在世界で最も広く使用されている eGFR 推定式です。</p>
+
+    <h3>計算式</h3>
+    <p class="formula">eGFR = 142 × min(Scr/κ, 1)<sup>α</sup> × max(Scr/κ, 1)<sup>−1.200</sup> × 0.9938<sup>age</sup> × 1.012 (if female)</p>
+
+    <p>ここで：</p>
+    <ul>
+      <li><strong>Scr</strong>：血清クレアチニン（mg/dL）</li>
+      <li><strong>κ</strong>：女性 0.7、男性 0.9</li>
+      <li><strong>α</strong>：女性 −0.241、男性 −0.302</li>
+      <li><strong>age</strong>：年齢（歳）</li>
+      <li><strong>1.012</strong>：女性補正係数</li>
+    </ul>
+
+    <h3>2021年に人種係数が削除された理由</h3>
+    <p>2021年以前の CKD-EPI 式には「アフリカ系アメリカ人」補正係数が含まれていました。これは黒人の平均筋肉量が高いという仮定に基づくものでしたが、生物学的根拠に乏しく、医療格差を悪化させる可能性があると批判されました。同じ腎機能でも黒人患者はより高い eGFR 推定値を得て、紹介や治療が遅れる恐れがあったのです。</p>
+    <p>2021年の改訂で人種係数は正式に削除されました。NKF と ASN の共同声明は、<strong>人種は社会的構築物であり、生物学的変数ではない</strong>と述べています。新しい式は黒人集団での精度がわずかに変化しますが、より公平とされ、現在の標準となっています。</p>
+
+    <h3>その他の一般的な式</h3>
+    <ul>
+      <li><strong>MDRD 式</strong>：1999年発表。歴史的に広く使用されたが eGFR &gt; 60 で精度が低く、現在は CKD-EPI に置き換えられつつある</li>
+      <li><strong>CKD-EPI シスタチン C 式</strong>：シスタチン C 単独またはクレアチニンとの併用。筋肉量が異常な集団に適用</li>
+      <li><strong>Schwartz 式</strong>：小児専用。18歳未満で使用</li>
+      <li><strong>Cockcroft-Gault 式</strong>：主に薬剤投与量調整用。CKD 病期分類には使用しない</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>よくある質問</h2>
+
+    <h3>eGFR の正常値は？</h3>
+    <p>一般に 90 mL/min/1.73m² 以上が正常とされます。ただし正常範囲は年齢により異なります。若年成人は通常 100〜120 で、40歳以降は年に約 1 mL/min 低下します。60歳以上で eGFR が 60〜89 の場合は、疾患ではなく正常な加齢である可能性があります。</p>
+
+    <h3>eGFR は回復しますか？</h3>
+    <p>原因によります。急性腎障害（脱水、感染、薬剤など）の場合、誘因を取り除けば eGFR は回復する可能性があります。慢性腎臓病の場合、eGFR は通常ゆっくりと低下し、治療目標は低下速度を遅らせることで、逆転させることではありません。血圧、血糖、タンパク尿を管理することで、eGFR が安定またはわずかに改善する場合もあります。</p>
+
+    <h3>eGFR はどのくらいの頻度で検査すべき？</h3>
+    <p>腎臓病のリスク因子がない健康な方は、年1回の健康診断時の検査で十分です。CKD と診断された場合、頻度はステージによります：G1〜G2 は年1回、G3 は6ヶ月ごと、G4〜G5 は3ヶ月ごとまたはそれ以上。具体的なスケジュールは医師が総合的に判断します。</p>
+
+    <h3>mg/dL と µmol/L の換算は？</h3>
+    <p>換算関係は 1 mg/dL = 88.42 µmol/L です。米国と一部の欧州諸国は mg/dL を、中国、日本、欧州の大部分は µmol/L を使用します。本計算ツールは選択した単位に応じて自動的に換算します。</p>
+
+    <h3>なぜ女性に補正係数が必要ですか？</h3>
+    <p>同じ腎機能レベルでは、女性の平均筋肉量が男性より少なく、血清クレアチニン基準値も低くなります。補正しないと女性の eGFR は系統的に過大評価されます。式の 1.012 係数と異なる κ、α パラメータは、この差を補正するためのものです。</p>
+
+    <h3>この計算ツールは病院の検査の代わりになりますか？</h3>
+    <p>いいえ。本ツールは式に基づく推定値で、健康教育と予備的スクリーニングを目的としています。病院の検査室は標準化された測定法と品質管理を用いており、結果はより信頼できます。腎機能に懸念がある場合は、病院の検査結果と医師の判断を優先してください。</p>
+
+    <h3>病院の報告と eGFR が違うのはなぜ？</h3>
+    <p>考えられる理由：病院が異なる式（MDRD やシスタチン C 式など）を使用した、クレアチニン測定法が異なる、または入力単位が報告単位と一致していない。差が大きい場合は病院の報告を基準とし、使用された式を医師に確認してください。</p>
+
+    <h3>子供にこの計算ツールを使えますか？</h3>
+    <p>いいえ。2021 CKD-EPI 式は18歳以上の成人のみで検証されています。子供には Schwartz 式または新しい CKiD U25 式が必要で、これらは成長・発達段階を考慮しています。</p>
+  </section>
+
+  <section>
+    <div class="disclaimer"><strong>医療免責事項：</strong>本計算ツールは教育およびスクリーニング目的のみです。診断ではなく、専門的な医療アドバイスの代替とはなりません。腎機能について懸念がある場合は、資格を持つ医療提供者にご相談ください。すべての計算はブラウザ内で実行され、健康データの収集・保存・送信は行いません。</div>
+  </section>
+</main>
+
+<footer class="footer" data-i18n="footer">Runs entirely in your browser. No data is collected or transmitted.</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/calculator.js"></script>
+</body>
+</html>

@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://toolara.dev/gfr-calculator/</loc>
     <lastmod>2026-09-14</lastmod>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://yourdomain.com/"/>
-    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://yourdomain.com/zh/"/>
-    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://yourdomain.com/zh-tw/"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://yourdomain.com/ja/"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://yourdomain.com/ko/"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://yourdomain.com/de/"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://yourdomain.com/ru/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourdomain.com/es/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://yourdomain.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://toolara.dev/gfr-calculator/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://toolara.dev/gfr-calculator/zh/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://toolara.dev/gfr-calculator/zh-tw/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://toolara.dev/gfr-calculator/ja/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://toolara.dev/gfr-calculator/ko/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://toolara.dev/gfr-calculator/de/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://toolara.dev/gfr-calculator/ru/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://toolara.dev/gfr-calculator/es/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://toolara.dev/gfr-calculator/"/>
   </url>
-  <url><loc>https://yourdomain.com/zh/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
-  <url><loc>https://yourdomain.com/zh-tw/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
-  <url><loc>https://yourdomain.com/ja/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
-  <url><loc>https://yourdomain.com/ko/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
-  <url><loc>https://yourdomain.com/de/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
-  <url><loc>https://yourdomain.com/ru/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
-  <url><loc>https://yourdomain.com/es/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/zh/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/zh-tw/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/ja/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/ko/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/de/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/ru/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
+  <url><loc>https://toolara.dev/gfr-calculator/es/</loc><lastmod>2026-09-14</lastmod><priority>0.9</priority></url>
 </urlset>

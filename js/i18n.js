@@ -67,7 +67,14 @@ async function initPage() {
 
 function setLang(lang) {
   if (!SUPPORTED_LANGS.includes(lang)) lang = DEFAULT_LANG;
-  window.location.href = LANG_TO_PATH[lang] || '/';
+  
+  // 获取当前路径的第一段作为子目录（例如 /gfr-calculator 或 /code-tools）
+  const pathSegments = window.location.pathname.split('/').filter(Boolean);
+  const subdir = pathSegments.length > 0 ? '/' + pathSegments[0] : '';
+  
+  // 拼接子目录和语言路径
+  const targetPath = subdir + (LANG_TO_PATH[lang] || '/');
+  window.location.href = targetPath;
 }
 
 document.addEventListener('DOMContentLoaded', initPage);

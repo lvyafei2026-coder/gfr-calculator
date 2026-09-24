@@ -60,30 +60,30 @@
     </select>
   </div>
   <div class="hero-inner">
-    <h1 data-i18n="title">Glomerular Filtration Rate (GFR) Calculator</h1>
-    <p data-i18n="subtitle">Estimate kidney function using the 2021 CKD-EPI creatinine equation. All calculations run in your browser — no data is sent or stored.</p>
+    <h1 data-i18n="title">사구체 여과율(GFR) 계산기</h1>
+    <p data-i18n="subtitle">2021 CKD-EPI 크레아티닌 공식을 사용하여 신장 기능을 추정합니다. 모든 계산은 브라우저에서 실행되며 데이터는 전송되거나 저장되지 않습니다.</p>
   </div>
 </header>
 
 <main class="wrap">
 
   <section class="card">
-    <h2 class="visually-hidden" data-i18n="calcHeading">GFR Calculator</h2>
+    <h2 class="visually-hidden" data-i18n="calcHeading">GFR 계산기</h2>
     <div class="row">
       <div>
-        <label for="age" data-i18n="ageLabel">Age (years)</label>
+        <label for="age" data-i18n="ageLabel">나이(세)</label>
         <input type="number" id="age" min="18" max="120" placeholder="58" inputmode="numeric">
       </div>
       <div>
-        <label for="sex" data-i18n="sexLabel">Sex</label>
+        <label for="sex" data-i18n="sexLabel">성별</label>
         <select id="sex">
-          <option value="" data-i18n="sexSelect">Select</option>
-          <option value="female" data-i18n="female">Female</option>
-          <option value="male" data-i18n="male">Male</option>
+          <option value="" data-i18n="sexSelect">선택하세요</option>
+          <option value="female" data-i18n="female">여성</option>
+          <option value="male" data-i18n="male">남성</option>
         </select>
       </div>
     </div>
-    <label for="creat" data-i18n="creatLabel">Serum creatinine</label>
+    <label for="creat" data-i18n="creatLabel">혈청 크레아티닌</label>
     <div class="row">
       <div style="flex:2">
         <input type="number" id="creat" step="0.01" min="0.1" placeholder="0.9" inputmode="decimal">
@@ -95,25 +95,25 @@
         </select>
       </div>
     </div>
-    <button class="calc" type="button" onclick="calculate()" data-i18n="calcBtn">Calculate eGFR</button>
+    <button class="calc" type="button" onclick="calculate()" data-i18n="calcBtn">eGFR 계산</button>
 
     <div id="result" role="region" aria-live="polite">
       <div class="result-top">
         <div class="result-left">
-          <div class="result-label" data-i18n="resultLabel">Estimated GFR</div>
+          <div class="result-label" data-i18n="resultLabel">추정 GFR</div>
           <div class="egfr-num">
             <span id="egfrValue">—</span>
             <span class="egfr-unit">mL/min/1.73m²</span>
           </div>
         </div>
         <div class="stage-badge" id="stageBadge">
-          <small data-i18n="stageLabel">Stage</small>
+          <small data-i18n="stageLabel">단계</small>
           <span id="stageText">—</span>
         </div>
       </div>
       <div class="result-meaning" id="interpretation"></div>
       <div class="result-note" id="interpretNote"></div>
-      <div class="result-disclaimer" data-i18n="resultDisclaimer">This is an estimate for screening purposes only.</div>
+      <div class="result-disclaimer" data-i18n="resultDisclaimer">이 결과는 선별 목적의 추정치이며 임상적 판단을 대체하지 않습니다.</div>
     </div>
   </section>
 
@@ -275,7 +275,7 @@
   </section>
 </main>
 
-<footer class="footer" data-i18n="footer">Runs entirely in your browser. No data is collected or transmitted.</footer>
+<footer class="footer" data-i18n="footer">전적으로 브라우저에서 실행됩니다. 데이터를 수집하거나 전송하지 않습니다.</footer>
 
 <script src="/js/i18n.js"></script>
 <script src="/js/calculator.js"></script>

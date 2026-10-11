@@ -45,10 +45,7 @@
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
-<header class="hero">
-  <div class="lang-switch">
-    <select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
+<header class="site-header"><div class="site-header-inner"><a class="site-brand" href="/" aria-label="gfr-calculator"><span class="site-brand-mark" aria-hidden="true">GFR</span><span class="site-brand-name" data-i18n="title"></span></a><nav class="site-nav" aria-label="Site navigation"><a class="site-nav-link" href="https://toolara.dev/">toolara</a><select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
       <option value="en">English</option>
       <option value="zh">简体中文</option>
       <option value="zh-TW">繁體中文</option>
@@ -57,8 +54,11 @@
       <option value="de">Deutsch</option>
       <option value="ru">Русский</option>
       <option value="es">Español</option>
-    </select>
-  </div>
+    </select></nav></div></header>
+
+
+<header class="hero">
+
   <div class="hero-inner">
     <h1 data-i18n="title">사구체 여과율(GFR) 계산기</h1>
     <p data-i18n="subtitle">2021 CKD-EPI 크레아티닌 공식을 사용하여 신장 기능을 추정합니다. 모든 계산은 브라우저에서 실행되며 데이터는 전송되거나 저장되지 않습니다.</p>
